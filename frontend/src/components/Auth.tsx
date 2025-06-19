@@ -1,14 +1,28 @@
 import { useState, type ChangeEvent } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import type {SignupInput} from "@tushar16/mediumblog-common";
-
+import axios from "axios";
+import {BACKEND_URL} from "../../config";
 const Auth = ({type}: {type: "signup" | "signin"}) => {
-  
+  const navigate = useNavigate();
   const [postInputs, setPostInputs] = useState<SignupInput>({
     name: "",
     username: "",
     password: ""
   })
+
+  async function sendRequest() {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`, postInputs);
+      const jwt = response.data;
+      localStorage.setItem("token", jwt);
+      navigate("/blogs");
+    } catch(e) {
+      console.log(e);
+      alert("Something wrong happens"); 
+    }
+  }
+
   
   return (
     <div className="h-screen bg-white flex flex-col justify-center items-center">
@@ -24,19 +38,25 @@ const Auth = ({type}: {type: "signup" | "signin"}) => {
         </h3>
       </div>
       <div>
-        <LableInput label="Username" placeholder="Tushar Sachdeva"
-         onchange={(e) => {
-          setPostInputs({
-            ...postInputs,
-            name: e.target.value
-          })
-        }} />
+        {type === "signup" ? (
+        <LableInput
+          label="Name"
+          placeholder="Tushar Sachdeva"
+          onchange={(e) => {
+            setPostInputs({
+              ...postInputs,
+              name: e.target.value,
+            });
+          }}
+        />
+      ) : null}
+
 
         <LableInput label="Email" placeholder="tush@gmail.com"
          onchange={(e) => {
           setPostInputs({
             ...postInputs,
-            name: e.target.value
+            username: e.target.value
           })
         }} />
 
@@ -44,11 +64,11 @@ const Auth = ({type}: {type: "signup" | "signin"}) => {
          onchange={(e) => {
           setPostInputs({
             ...postInputs,
-            name: e.target.value
+            password: e.target.value
           })
         }} />
       </div>
-      <button className="bg-black text-white mt-4 w-sm p-2.5 rounded-lg cursor-pointer">
+      <button onClick={sendRequest} className="bg-black text-white mt-4 w-sm p-2.5 rounded-lg cursor-pointer">
         {type === 'signin' ? "Login" : "Sign up"}
       </button>
     </div>
