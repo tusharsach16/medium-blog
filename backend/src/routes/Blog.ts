@@ -108,7 +108,17 @@ blogRouter.get('/getBlog/:id', async (c) => {
     }
 
     const blog = await prisma.blog.findUnique({
-      where: { id },
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
 
     if (!blog) {
@@ -125,16 +135,27 @@ blogRouter.get('/getBlog/:id', async (c) => {
 
 
 blogRouter.get("/bulk", async (c) => {
-  try {
+  {try {
     const prisma = createPrismaClient(c.env.DATABASE_URL);
-    const blogs = await prisma.blog.findMany();
+    const blogs = await prisma.blog.findMany({
+      select: {
+        content: true,
+        title: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
     
     return c.json({blogs}, 200);
   } catch(err : unknown) {
     // @ts-ignore
     console.error('Blog Fetch Error:', err);
     return c.json({ error: 'Internal server error', details: err instanceof Error ? err.message : 'Unknown error' }, 500);
-  }
+  }}
 })
 
 

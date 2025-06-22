@@ -111,10 +111,7 @@ userRouter.post('/signin', async (c) => {
     }
 
     const token = await sign({ id: user.id }, c.env.SECRET_KEY);
-    return c.json({ 
-      Name: user.name,
-       token 
-      }, 200);
+    return c.json(token, 200);
   } catch (err: unknown) {
     // @ts-ignore
     console.error('Signin Error:', err);
