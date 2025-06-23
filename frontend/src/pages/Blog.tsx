@@ -1,3 +1,5 @@
+import Appbar from "../components/Appbar";
+import BlogSkeleton from "../components/BlogSkeleton";
 import FullBlog from "../components/FullBlog";
 import { useBlog } from "../hooks/bloghook"
 import { useParams } from "react-router-dom";
@@ -8,7 +10,20 @@ const Blog = () => {
     id: id || ""
   });
   if(loading) {
-    return <div>loading...</div>
+    return <div>
+      <Appbar/>
+      <div className='flex justify-center'>
+        <div>
+          <BlogSkeleton/>
+          <BlogSkeleton/>
+          <BlogSkeleton/>
+          <BlogSkeleton/>
+          <BlogSkeleton/>
+          <BlogSkeleton/>
+        </div>
+      </div>
+    </div>
+    
   }
   if (!blog) {
     return <div>Blog not found.</div>;
